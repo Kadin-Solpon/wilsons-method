@@ -3,9 +3,9 @@ import random
 
 pygame.init()
 
-cellSize = 10
-columns = 75
-rows = 50
+cellSize = 25
+columns = 50
+rows = 30
 screenWidth = cellSize * columns
 screenHeight = cellSize * rows
 screen = pygame.display.set_mode((screenWidth, screenHeight)) # (W,H) 50 boxes in a row, 75 in a column
@@ -89,12 +89,6 @@ def find_neighbors(z):
         neighbors.append((x, y + cellSize))
         
     return [box for box in neighbors if box in listOfBoxCoords]
-#tests for find_neighbors()
-#print(f"""(50,50) pair{find_neighbors((50,50))}""")
-#print(f"""(0,0) pair{find_neighbdors((0,0))}""")
-#print(f"""(750,500) pair{find_neighbors((750,500))}""")
-#print(f"""(750,0) pair{find_neighbors((750,0))}""")
-#print(f"""(0,500) pair{find_neighbors((0,500))}""")
 
 
 
@@ -167,42 +161,34 @@ def wilsons_method_implementation():
     definedPath.append(end)
 
     while allPossibleRandomCoords:
-        
         #testing definedPath size
         print(f"definedPath Size: {len(definedPath)}")
         print(f"remaining random choices: {len(allPossibleRandomCoords)}")
         #finding next coordinate
         next = random.choice(find_neighbors(tentativePath[-1]))
 
-        #print(f"next: {next}")
-
-        #checks if next is end/in the defined path
+       
         #changing both the current and next boxes so their walls match
         if next in tentativePath:
-            # print("found tentative path")
-            # print(f"tentative path: {tentativePath}")
+          
             #cutting off loop
             for b in tentativePath[tentativePath.index(next)::]:
                 currentBox = listOfBoxObj[listOfBoxCoords.index(b)]
                 #resets their walls and color
                 currentBox.walls = {"top": True, "bottom":True, "left":True, "right": True}
-                currentBox.color = (150,150,150)
+                if b != tentativePath[0]:
+                    currentBox.color = (150,150,150)
                 currentBox.update_box()
                 currentBox.draw_walls()
             
             #cuts off the loop by starting tentative path at the index of next - 1 (effectively the coordinate before the next block. the first time it was put into the list)
             tentativePath = tentativePath[:tentativePath.index(next) + 1:] #+1
-
-            #used to update just the walls of the last box of non loop section of the tentative path
             
             
             if len(tentativePath) > 1:
                 print("here")
                 change_neighbors(next, tentativePath[-2])
 
-                #tentativePath[-2]
-        
-            #next = random.choice(find_neighbors(tentativePath[-1]))
                 
         if next in definedPath:
             
@@ -219,13 +205,8 @@ def wilsons_method_implementation():
 
                 if item not in definedPath:
                     definedPath.append(item)
-
-
-            #definedPath.extend([coord for coord in tentativePath if coord not in definedPath])
-
             
             #removing all the boxes in tentativePath from allPossibleRandomCoords
-            #allPossibleRandomCoords = [box for box in allPossibleRandomCoords if box not in definedPath]
             allPossibleRandomCoords = [box for box in allPossibleRandomCoords if box not in definedPath]
 
             print(f"size of allpossible: {len(allPossibleRandomCoords)}")
@@ -239,23 +220,6 @@ def wilsons_method_implementation():
                 pygame.display.update()
             
             continue
-            #resets tentative path
-            # if len(allPossibleRandomCoords) > 0:
-            #     print(f"size of tent: {len(tentativePath)}")
-            #     print(tentativePath)
-            #     print(f"size of allPossibleRandomCoords: {len(allPossibleRandomCoords)}")
-            #     print(allPossibleRandomCoords)
-            #     tentativePath = [random.choice(allPossibleRandomCoords)]
-
-                #drawing the first box onto the screen
-            
-
-            #next = random.choice([box for box in find_neighbors(tentativePath[-1]) if box not in tentativePath])
-
-            #i think this one is right
-            #next = random.choice(allPossibleRandomCoords)
-            
-            #print(f"defined path size: {len(definedPath)}")
 
         
         if next not in tentativePath:
@@ -266,11 +230,6 @@ def wilsons_method_implementation():
     pygame.display.update()
     print(f"defined path: {definedPath}, length of defined path: {len(definedPath)}")
 
-        #pygame.time.delay(10)
-        # testing 
-        # print(f"tentative path: {tentativePath}")
-        # print(f"next {next}, next type: {type(next)}")
-        # print(f"next index{tentativePath.index(next)}")
 wilsons_method_implementation()
 
 
