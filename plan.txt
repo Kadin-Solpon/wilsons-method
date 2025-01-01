@@ -1,0 +1,7 @@
+Creating Wilson's method
+    1. user clicks a starting box/coordinate
+    2. program selects a random box/coordinate that is not in the defined path
+    3. program uses the random walk theory to find its way to the box/coordinate defined in step 2. If it encounters a box/coordinate that it has already checked in its random walk, it will cut out the loop created.
+    4. the boxes chosen in the random walk path will have their walls altered to create the walls of the box.
+    5. once the coordinate in step 2 is reached, repeat step 2-4 until all the boxes are a part of the maze
+
