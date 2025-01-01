@@ -5,3 +5,10 @@ Creating Wilson's method
     4. the boxes chosen in the random walk path will have their walls altered to create the walls of the box.
     5. once the coordinate in step 2 is reached, repeat step 2-4 until all the boxes are a part of the maze
 
+Depth First Search
+    1. Start at top left corner
+    2. Search boxes and go through open walls
+    3. Backtrack one it cant go any further
+    4. Check previous box for ways to go
+    5. Repeat 2-4 until the bottom right corner is reached, or all possible ways have been explord and no way is found 
+    

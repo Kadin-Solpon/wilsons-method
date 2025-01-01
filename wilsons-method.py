@@ -74,7 +74,7 @@ for box in listOfBoxObj:
 pygame.display.update()
 
 #returns a list of the 4 neighbors of the give box. z is a tuple, coordinate pair
-def find_neighbors(z):
+def find_wilson_neighbors(z):
     #neighbors of current index
     neighbors = []
     x,y = z
@@ -133,6 +133,9 @@ def change_neighbors(neighbor, current):
     currentBoxObj.draw_walls()
     pygame.display.update()
 
+#the tentative path will be added to this
+definedPath = []
+
 def wilsons_method_implementation():
 
     #path that we will add all coordinates to, it will be cleared once a defined path is created
@@ -142,10 +145,8 @@ def wilsons_method_implementation():
     currentBox.update_box()
     currentBox.draw_walls()
     pygame.display.update()
-    pygame.time.delay(1000)
-    #the tentative path will be added to this
-    definedPath = []
-
+    
+    
     #all end coordinates that can be  trying to reach
     allPossibleRandomCoords = [box for box in listOfBoxCoords if box not in tentativePath]
 
@@ -154,7 +155,7 @@ def wilsons_method_implementation():
     allPossibleRandomCoords.pop(allPossibleRandomCoords.index(end))
     
     endBox = listOfBoxObj[listOfBoxCoords.index(end)]
-    endBox.color = (255,0,255)
+    endBox.color = (255,255,255)
     endBox.update_box()
     endBox.draw_walls()
     
@@ -165,7 +166,7 @@ def wilsons_method_implementation():
         print(f"definedPath Size: {len(definedPath)}")
         print(f"remaining random choices: {len(allPossibleRandomCoords)}")
         #finding next coordinate
-        next = random.choice(find_neighbors(tentativePath[-1]))
+        next = random.choice(find_wilson_neighbors(tentativePath[-1]))
 
        
         #changing both the current and next boxes so their walls match
@@ -199,7 +200,7 @@ def wilsons_method_implementation():
 
             for item in tentativePath:
                 currentBox = listOfBoxObj[listOfBoxCoords.index(item)]
-                currentBox.color = (155,0,155)
+                currentBox.color = (255,255,255)
                 currentBox.update_box()
                 currentBox.draw_walls()
 
@@ -233,6 +234,98 @@ def wilsons_method_implementation():
 wilsons_method_implementation()
 
 
+#takes in one coordinates. returns list of valid neighboring box coords
+def find_dfs_neighbors(z):
+    allNeighbors = []
+    x,y = z
+    zBox = listOfBoxObj[listOfBoxCoords.index(z)]
+
+    #checks if there is a valid left neighbor
+    if x > 0:
+        neighbor1 = listOfBoxObj[listOfBoxCoords.index((x - cellSize, y))]
+        if neighbor1.walls["right"] == False and zBox.walls["left"] == False:
+            allNeighbors.append((x - cellSize, y))
+
+    #checks if there is a valid right neighbor
+    if x < (columns - 1) * cellSize:
+        neighbor2 = listOfBoxObj[listOfBoxCoords.index((x + cellSize, y))]
+        if neighbor2.walls["left"] == False and zBox.walls["right"] == False:
+            allNeighbors.append((x + cellSize, y))
+
+    #checks if there is a valid top neighbor
+    if y > 0:
+        neighbor3 = listOfBoxObj[listOfBoxCoords.index((x, y - cellSize))]
+        if neighbor3.walls["bottom"] == False and zBox.walls["top"] == False:
+            allNeighbors.append((x, y - cellSize))
+
+    #checks if there is a valid bottom neighbor
+    if y < (rows - 1) * cellSize:
+        neighbor4 = listOfBoxObj[listOfBoxCoords.index((x, y + cellSize))]
+        if neighbor4.walls["top"] == False and zBox.walls["bottom"] == False:
+            allNeighbors.append((x, y + cellSize))
+    
+    return allNeighbors
+    
+def depth_first_search():
+
+    #sets starting coords to top left box and end coords to bottom right box
+    start = (0,0)
+    end = ((columns - 1)  * cellSize, (rows - 1) * cellSize)
+
+    #changes both the start and end box colors to purple
+    currentBlock = listOfBoxObj[listOfBoxCoords.index(start)]
+    endBlock = listOfBoxObj[listOfBoxCoords.index(end)]
+
+    currentBlock.color = (200,0,200)
+    endBlock.color = (200,0,200)
+
+    currentBlock.update_box()
+    endBlock.update_box()
+
+    currentBlock.draw_walls()
+    endBlock.draw_walls()
+
+    pygame.display.update()
+
+    #sets the two lists
+    visited = []
+    #acts as a stack
+    unvisited = [start]
+
+
+    while unvisited:
+        print(f"unvisited: {unvisited}")
+        #sets current to the last item put in to univisited. removes it from unvisited
+        current = unvisited.pop()
+
+        #skips block if its visited
+        if current in visited:
+            continue
+        
+        #checks if the current is the end block
+        if current == end:
+            print(f"found end")
+            pygame.time.delay(10000)
+            pygame.quit()
+
+        #puts current into visited
+        visited.append(current)
+
+        currentBox = listOfBoxObj[listOfBoxCoords.index(current)]
+        currentBox.color = (200,0,200)
+        currentBox.update_box()
+        currentBox.draw_walls()
+        pygame.display.update()
+
+
+        #makes sure that the only boxes that are added are ones that are neither in visited or unvisited. this ensures that no duplicates will appear in unvisited, and no box that is already checked wil be added
+        unvisited.extend([box for box in find_dfs_neighbors(current) if box not in visited and box not in unvisited])
+
+        pygame.time.delay(20)     
+                
+
+
+depth_first_search()
 
 
 pygame.time.delay(7000)
